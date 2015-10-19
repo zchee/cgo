@@ -1,4 +1,4 @@
-cgos
+cgo
 ====
 I research `golang cgo` implementation repository.  
 Mostly the golang/go cgo wiki program copy.  
