@@ -1,4 +1,4 @@
-package cgoexample
+package cgodispatch
 
 /*
 #include <stdio.h>
@@ -41,7 +41,6 @@ static inline int Async(char* s) {
 import "C"
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 
 	"os"
@@ -49,25 +48,13 @@ import (
 	"strings"
 )
 
-var Noout = NopWriteCloser{}
-
-type NopWriteCloser struct{}
-
-func (w NopWriteCloser) Write(b []byte) (int, error) {
-	return len(b), nil
-}
-
-func (w NopWriteCloser) Close() error {
-	return nil
-}
-
-var _ = io.WriteCloser(Noout)
-
-func ExecTee(stream io.WriteCloser, command string, args ...string) (stdout []byte, stderr error) {
+func ExecTee(command string, args ...string) (stdout []byte, stderr error) {
 	cmd := exec.Command(command, args...)
 	read, write, _ := os.Pipe()
 
-	defer func() { read.Close() }()
+	defer func() {
+		read.Close()
+	}()
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
@@ -88,7 +75,7 @@ func Exec(cmd string) (stdout string, stderr error) {
 	split := strings.Split(cmd, " ")
 	c := split[0]
 
-	o, err := ExecTee(Noout, c, strings.Join(split[1:], " "))
+	o, err := ExecTee(c, strings.Join(split[1:], " "))
 
 	return string(o), err
 }
