@@ -8,7 +8,7 @@ package cgodispatch
 
 extern void goexecve();
 
-static inline int Async(char* s) {
+static inline int c_async(char* s) {
 	dispatch_queue_t gQueue = dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0);
 
 	dispatch_async(gQueue, ^{
@@ -33,23 +33,18 @@ static inline int Async(char* s) {
 
 	return 0;
 }
-
-// static inline void Myprint(char* s) {
-//
-// }
 */
 import "C"
 import (
 	"fmt"
 	"io/ioutil"
-
 	"os"
 	"os/exec"
 	"strings"
 )
 
-func ExecTee(command string, args ...string) (stdout []byte, stderr error) {
-	cmd := exec.Command(command, args...)
+func Exec(argc string, argv ...string) (stdout []byte, stderr error) {
+	cmd := exec.Command(argc, argv...)
 	read, write, _ := os.Pipe()
 
 	defer func() {
@@ -62,30 +57,30 @@ func ExecTee(command string, args ...string) (stdout []byte, stderr error) {
 	stderr = cmd.Run()
 	write.Close()
 
-	out, readErr := ioutil.ReadAll(read)
+	readOut, readErr := ioutil.ReadAll(read)
 	if readErr != nil {
-		return out, readErr
+		return readOut, readErr
 	}
 	return
 }
 
-func Exec(cmd string) (stdout string, stderr error) {
+func Spawn(cmd string) (stdout string, stderr error) {
 	var o []byte
 
 	split := strings.Split(cmd, " ")
 	c := split[0]
 
-	o, err := ExecTee(c, strings.Join(split[1:], " "))
+	o, err := Exec(c, strings.Join(split[1:], " "))
 
 	return string(o), err
 }
 
 //export goexecve
 func goexecve(char *C.char) {
-	out, _ := Exec(C.GoString(char))
+	out, _ := Spawn(C.GoString(char))
 	fmt.Printf("%s\n", out)
 }
 
-func EndExec(end string) {
-	C.Async(C.CString(end))
+func Async(end string) {
+	C.c_async(C.CString(end))
 }
