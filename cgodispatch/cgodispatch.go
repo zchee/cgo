@@ -68,9 +68,15 @@ func Spawn(cmd string) (stdout string, stderr error) {
 	var o []byte
 
 	split := strings.Split(cmd, " ")
-	c := split[0]
+	argc := split[0]
 
-	o, err := Exec(c, strings.Join(split[1:], " "))
+	var argv = strings.Fields(split[1])
+	for i := 2; i < len(split); i++ {
+		argv = append(argv, split[i])
+		fmt.Println(argv)
+	}
+
+	o, err := Exec(argc, argv...)
 
 	return string(o), err
 }
@@ -81,6 +87,6 @@ func goexecve(char *C.char) {
 	fmt.Printf("%s\n", out)
 }
 
-func Async(end string) {
-	C.c_async(C.CString(end))
+func Async(args string) {
+	C.c_async(C.CString(args))
 }
