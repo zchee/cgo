@@ -1,0 +1,10 @@
+{
+    "WorkingDir": "{GOPATH}/src/github.com/zchee/cgo/cgodispatch/example",
+    "SourceDir": [
+        "{GOPATH}/src/github.com/zchee/cgo/cgodispatch/"
+    ],
+    "SourceExt": [".c", ".cpp", ".go", ".h"],
+    "BuildCmd": "go build",
+    "RunCmd": "example",
+    "Decreasing": 1
+}
