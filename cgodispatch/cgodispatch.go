@@ -6,7 +6,7 @@ package cgodispatch
 
 #include <dispatch/dispatch.h>
 
-extern void goexecve();
+extern void Goexecve();
 
 static inline int c_async(char* s) {
 	dispatch_queue_t gQueue = dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0);
@@ -19,7 +19,7 @@ static inline int c_async(char* s) {
 			for (int i = 0; i < 10; i++) {
 				dispatch_sync(sQueue, ^{
 					// printf("block %d\n", i);
-					goexecve(s);
+					Goexecve(s);
 				});
 			}
 
@@ -43,6 +43,9 @@ import (
 	"strings"
 )
 
+// Wrapper exec.Command
+//
+// Output stdout and stderr for os.Stdout
 func Exec(argc string, argv ...string) (stdout []byte, stderr error) {
 	cmd := exec.Command(argc, argv...)
 	read, write, _ := os.Pipe()
@@ -64,6 +67,7 @@ func Exec(argc string, argv ...string) (stdout []byte, stderr error) {
 	return
 }
 
+// Support space separate cmd args for exec.Command()
 func Spawn(cmd string) (stdout string, stderr error) {
 	var o []byte
 
@@ -81,12 +85,17 @@ func Spawn(cmd string) (stdout string, stderr error) {
 	return string(o), err
 }
 
-//export goexecve
-func goexecve(char *C.char) {
+// Export execute binary use os.exec func to C-land
+//export Goexecve
+func Goexecve(char *C.char) {
 	out, _ := Spawn(C.GoString(char))
 	fmt.Printf("%s\n", out)
 }
 
+// Endpoint of outside go pkg
+//
+// callgraph:
+//   Async() -> C.c_async -> Goexecve() with dispath -> Spawn() -> Exec()
 func Async(args string) {
 	C.c_async(C.CString(args))
 }
