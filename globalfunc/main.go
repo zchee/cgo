@@ -1,4 +1,4 @@
-// globalfunc callgraph:
+// globalfunc is simple use Go and C export func
 //	(Go:globalfunc.go) AGoFunction()
 //			export AGoFunction for C
 //		|
