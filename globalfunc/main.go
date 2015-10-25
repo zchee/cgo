@@ -1,3 +1,4 @@
+// https://github.com/golang/go/wiki/cgo#global-functions
 // globalfunc is simple use Go and C export func
 //	(Go:globalfunc.go) AGoFunction()
 //			export AGoFunction for C
