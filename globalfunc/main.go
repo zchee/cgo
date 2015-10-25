@@ -19,6 +19,7 @@ package main
 
 import "github.com/zchee/cgo/globalfunc/gf"
 
+// call gf.Example()
 func main() {
 	gf.Example()
 }
