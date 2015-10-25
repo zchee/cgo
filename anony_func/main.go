@@ -5,12 +5,12 @@ import "fmt"
 
 func main() {
 	anon := func(name string) string {
-		return "Hiya, " + name
+		return "Hiya"
 	}
-	anotherFunction(anon)
+	anonyFunc(anon)
 }
 
-func anotherFunction(f func(string) string) {
+func anonyFunc(f func(string) string) {
 	result := f("David")
 	fmt.Println(result) // Prints "Hiya, David"
 }
